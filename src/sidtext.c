@@ -54,6 +54,8 @@ char editorReadKey() {
     return c;
 }
 
+/*** input ***/
+
 void editorProcessKeypress() {
     char c = editorReadKey();
 
