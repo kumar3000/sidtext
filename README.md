@@ -1,6 +1,7 @@
 # sidtext
 a text editor
 
-```bash title="Linux/WSL"
+### Linux/WSL
+```bash
 make clean run
 ```
