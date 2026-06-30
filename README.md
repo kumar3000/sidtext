@@ -1,0 +1,2 @@
+# sidtext
+a text editor
