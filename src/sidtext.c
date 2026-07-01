@@ -1,5 +1,5 @@
 /*** includes ***/
-#include <ctype.h>
+#include <string.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,7 +103,7 @@ struct abuf {
 void abufAppend(struct abuf *ab, const char *s, int len) {
     char *new = realloc(ab->b, ab->len + len);
 
-    if (new == NULL) return;
+    if (new == NULL) return; // error handling
     memcpy(&new[ab->len], s, len);
     ab->b = new;
     ab->len += len;
