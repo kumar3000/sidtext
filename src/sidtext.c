@@ -79,6 +79,40 @@ int getCursorPosition(int *rows, int *cols) {
     return 0;
 }
 
+int getWindowSize(int *rows, int *cols) {
+    struct winsize ws;
+
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+        if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) return -1;
+        return getCursorPosition(rows, cols);
+    } else {
+        *cols = ws.ws_col;
+        *rows = ws.ws_row;
+        return 0;
+    }
+}
+
+/*** append buffer ***/
+struct abuf {
+    char *b;
+    int len;
+};
+
+#define ABUF_INIT {NULL, 0}
+
+void abufAppend(struct abuf *ab, const char *s, int len) {
+    char *new = realloc(ab->b, ab->len + len);
+
+    if (new == NULL) return;
+    memcpy(&new[ab->len], s, len);
+    ab->b = new;
+    ab->len += len;
+}
+
+void abufFree(struct abuf *ab) {
+    free(ab->b);
+}
+
 /*** input ***/
 void editorProcessKeypress() {
     char c = editorReadKey();
@@ -109,19 +143,6 @@ void editorRefreshScreen() {
     write(STDOUT_FILENO, "\x1b[H", 3); // move cursor to top-left corner
     editorDrawRows();
     write(STDOUT_FILENO, "\x1b[H", 3);
-}
-
-int getWindowSize(int *rows, int *cols) {
-    struct winsize ws;
-
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
-        if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) return -1;
-        return getCursorPosition(rows, cols);
-    } else {
-        *cols = ws.ws_col;
-        *rows = ws.ws_row;
-        return 0;
-    }
 }
 
 /*** init ***/
