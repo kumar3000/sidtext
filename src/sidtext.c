@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 /*** defines ***/
+#define SIDTEXT_VERSION "0.0.1"
 #define CTRL_KEY(k) ((k) & 0x1f) 
 
 /*** data ***/
@@ -130,8 +131,23 @@ void editorProcessKeypress() {
 void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
-        abufAppend(ab, "~", 1);
-
+        if (y == E.screenrows / 3) {
+            char welcome[80];
+            int welcomelen = snprintf(welcome, sizeof(welcome),
+                "Sidtext version %s", SIDTEXT_VERSION);
+            if (welcomelen > E.screencols) welcomelen = E.screencols;
+            int padding = (E.screencols - welcomelen) / 2;
+            if (padding) {
+                abufAppend(ab, "~", 1);
+                padding--;
+            }
+            while (padding--) abufAppend(ab, " ", 1);
+            abufAppend(ab, welcome, welcomelen);
+        } else {
+            abufAppend(ab, "~", 1);
+        }
+        
+        abufAppend(ab, "\x1b[K", 3);
         if (y < E.screenrows - 1) {
             abufAppend(ab, "\r\n", 2);
         }
@@ -142,7 +158,6 @@ void editorRefreshScreen() {
     struct abuf ab = ABUF_INIT;
     
     abufAppend(&ab, "\x1b[?25l", 6);
-    abufAppend(&ab, "\x1b[2J", 4);
     abufAppend(&ab, "\x1b[H", 3);
 
     editorDrawRows(&ab);
