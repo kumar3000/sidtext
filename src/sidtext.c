@@ -140,13 +140,15 @@ void editorDrawRows(struct abuf *ab) {
 
 void editorRefreshScreen() {
     struct abuf ab = ABUF_INIT;
-
+    
+    abufAppend(&ab, "\x1b[?25l", 6);
     abufAppend(&ab, "\x1b[2J", 4);
     abufAppend(&ab, "\x1b[H", 3);
 
     editorDrawRows(&ab);
 
     abufAppend(&ab, "\x1b[H", 3);
+    abufAppend(&ab, "\x1b[?25l", 6);
 
     write(STDOUT_FILENO, ab.b, ab.len);
     abufFree(&ab);
