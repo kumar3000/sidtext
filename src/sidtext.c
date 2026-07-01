@@ -127,22 +127,29 @@ void editorProcessKeypress() {
 }
 
 /*** output ***/
-void editorDrawRows() {
+void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
-        write(STDOUT_FILENO, "~", 1);
+        abufAppend(&ab, "~", 1)
 
         if (y < E.screenrows - 1) {
-            write(STDOUT_FILENO, "\r\n", 2);
+            abufAppend(&ab, "\r\n", 2);
         }
     }
 }
 
 void editorRefreshScreen() {
-    write(STDOUT_FILENO, "\x1b[2J", 4); // clear screen
-    write(STDOUT_FILENO, "\x1b[H", 3); // move cursor to top-left corner
-    editorDrawRows();
-    write(STDOUT_FILENO, "\x1b[H", 3);
+    struct abuf ab = ABUF_INIT;
+
+    abufAppend(&ab, "\x1b[2J", 4);
+    abufAppend(&ab, "\x1b[H", 3);
+
+    editorDrawRows(&ab);
+
+    abufAppend(&ab, "\x1b[H", 3);
+
+    write(STDOUT_FILENO, ab.b, ab.len);
+    abufFree(&ab);
 }
 
 /*** init ***/
