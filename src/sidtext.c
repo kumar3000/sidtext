@@ -163,7 +163,7 @@ void editorRefreshScreen() {
     editorDrawRows(&ab);
 
     abufAppend(&ab, "\x1b[H", 3);
-    abufAppend(&ab, "\x1b[?25l", 6);
+    abufAppend(&ab, "\x1b[?25h", 6);
 
     write(STDOUT_FILENO, ab.b, ab.len);
     abufFree(&ab);
