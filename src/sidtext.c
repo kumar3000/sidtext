@@ -130,10 +130,10 @@ void editorProcessKeypress() {
 void editorDrawRows(struct abuf *ab) {
     int y;
     for (y = 0; y < E.screenrows; y++) {
-        abufAppend(&ab, "~", 1)
+        abufAppend(ab, "~", 1);
 
         if (y < E.screenrows - 1) {
-            abufAppend(&ab, "\r\n", 2);
+            abufAppend(ab, "\r\n", 2);
         }
     }
 }
